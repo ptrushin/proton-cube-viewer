@@ -168,12 +168,13 @@ export default ({ cubeDef, cubeData, onSelectionChanged, additionalActions, loca
                     <Space direction="vertical">
                         <SortableCheckboxGroup items={cubeDef.dimensionDefs.filter(_ => !_.hidden).map(_ => ({code: _.code, title: _.title}))} itemSettings={dimensionSettings}
                             onChangeItemSettings={changeDimensionSettings}
+                            localeText={localeText}
                         />
-                        {localStorageKey ? <Button onClick={() => {localStorage.removeItem(localStorageKey); setDimensionSettings(initDimensionSettings())}}>{localeText.resetToDefault}</Button> : null}
+                        {localStorageKey ? <Button onClick={() => {localStorage.removeItem(localStorageKey); setDimensionSettings(initDimensionSettings())}}>{localeText.ResetToDefault}</Button> : null}
                     </Space>
                 }>
                     <Button>
-                        {localeText.configureDimensions} <DownOutlined />
+                        {localeText.ConfigureDimensions} <DownOutlined />
                     </Button>
                 </Popover>
                 {additionalActions}

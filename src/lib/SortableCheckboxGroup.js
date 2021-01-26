@@ -5,7 +5,7 @@ import { Space, Checkbox } from 'antd'
 import SortableCheckboxItem from './SortableCheckboxItem';
 const CheckboxGroup = Checkbox.Group;
 
-export default ({ items, itemSettings, onChangeItemSettings }) => {
+export default ({ items, itemSettings, onChangeItemSettings, localeText }) => {
     const visibleItems = Object.entries(itemSettings).filter(e => e[1].visible).map(e => e[0]);
     const indeterminate = visibleItems.length > 0 && visibleItems.length < items.length;
     const checkedAll = visibleItems.length === items.length;
@@ -38,7 +38,7 @@ export default ({ items, itemSettings, onChangeItemSettings }) => {
 
     return <DndProvider backend={HTML5Backend}>
         <Space direction="vertical">
-            <Checkbox indeterminate={indeterminate} onChange={(e) => checkAllChange(e.target.checked)} checked={checkedAll}>Все</Checkbox>
+            <Checkbox indeterminate={indeterminate} onChange={(e) => checkAllChange(e.target.checked)} checked={checkedAll}>{localeText.All}</Checkbox>
             <CheckboxGroup value={visibleItems} onChange={checkChange}>
                 {items
                     .filter(_ => itemSettings[_.code])

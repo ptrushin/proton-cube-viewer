@@ -110,7 +110,7 @@ export class Example extends PureComponent {
                     <Button key="detailUrl" href={this.getDetailUrl()}>Show details</Button>
                 ]}
                 localStorageKey="ShipmentCube"
-                localeText={{ configureDimensions: 'Configure dimensions', resetToDefault: 'Reset to default' }}
+                localeText={{ ConfigureDimensions: 'Configure dimensions', ResetToDefault: 'Reset to default', All: 'All' }}
             />
         </div>
     }
