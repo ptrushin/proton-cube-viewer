@@ -6,6 +6,7 @@ import { loadCubeData, loadCubeRows } from '../lib/CubeLoaderOdata'
 import CubeViewer from "../lib/CubeViewer";
 
 export class Example extends PureComponent {
+    odataPath = 'https://services.odata.org/V4/Northwind/Northwind.svc';
     state = {
         cubeDef: {
             code: 'Orders',
@@ -58,7 +59,7 @@ export class Example extends PureComponent {
     componentDidMount() {
         this.setState({ isProcessing: true });
         loadCubeData({
-            odataPath: 'https://services.odata.org/V4/Northwind/Northwind.svc',
+            odataPath: this.odataPath,
             cubeDef: this.state.cubeDef,
             callback: ({ cubeData }) => {
                 this.setState({
@@ -76,7 +77,7 @@ export class Example extends PureComponent {
     refresh = () => {
         this.setState({ isProcessing: true });
         loadCubeRows({
-            odataPath: window.APPCFG.odataPath,
+            odataPath: this.odataPath,
             cubeDef: this.state.cubeDef,
             callback: ({ cubeRows }) => {
                 this.setState({
@@ -97,34 +98,25 @@ export class Example extends PureComponent {
     getDetailUrl = () => {
         let filters = [];
         let addFilter = (filterName, urlName, keyType) => {
-            const keyConv = (key, keyType) => keyType === 'string' ? `%22${key}%22` : key;
+            const keyConv = (key, keyType) => keyType === 'string' ? `'${key}'` : key;
             if (!this.state.selectedKeys[filterName] || this.state.selectedKeys[filterName].length === 0) return;
             let f = this.state.selectedKeys[filterName].filter(f => f && f !== 0);
             if (f.length === 0) return;
-            filters.push(`${urlName}=%5B${f.map(_ => keyConv(_, keyType)).join("%2C")}%5D`);
+            filters.push('(' + f.map(_ => `${urlName} eq ${keyConv(_, keyType)}`).join(' or ') + ')');
         }
-        addFilter('BuyerId', 'Buyer');
-        addFilter('OperationTypeId', 'Operation');
-        addFilter('SupplierId', 'Supplier');
-        addFilter('ResponsibleEmployeeId', 'ResponsibleEmployee');
-        addFilter('ProblemType', 'ProblemType', 'string');
-        addFilter('ConsigneeId', 'Consignee');
-        addFilter('SourceNodeId', 'SourceNode');
-        addFilter('DestinationNodeId', 'DestinationNode');
-        addFilter('CustomerId', 'Customer');
-        addFilter('WbsId', 'Wbs');
-        return this.getUrl(`/ExecutionMonitoring?notOnlyProblem=true&notOnlyOwn=true&${filters.join('&')}`);
-    }
-
-    getUrl = (path) => {
-        return `${path}`;
+        addFilter('CustomerID', 'CustomerID', 'string');
+        addFilter('EmployeeID', 'EmployeeID');
+        return `${this.odataPath}/${this.state.cubeDef.code}?$filter=${filters.join(' and ')}`;
     }
 
     render() {
         return <div style={{ padding: 10 }}>
             <CubeViewer cubeDef={this.state.cubeDef} cubeData={this.state.cubeData}
                 onSelectionChanged={this.onSelectionChanged}
-                additionalActions={[<Button key="detailUrl" href={this.getDetailUrl()}>Show details</Button>]}
+                additionalActions={[
+                    <Button key="refresh" onClick={this.refresh}>Refresh</Button>,
+                    <Button key="detailUrl" href={this.getDetailUrl()}>Show details</Button>
+                ]}
                 localStorageKey="ShipmentCube"
                 localeText={{ configureDimensions: 'Configure dimensions', resetToDefault: 'Reset to default' }}
             />
