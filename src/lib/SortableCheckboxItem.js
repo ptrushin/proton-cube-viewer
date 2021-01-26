@@ -18,7 +18,7 @@ export default ({ code, title, index, changeIndex }) => {
                 return;
             }
             // Determine rectangle on screen
-            const hoverBoundingRect = ref.current?.getBoundingClientRect();
+            const hoverBoundingRect = (ref.current || {}).getBoundingClientRect();
             // Get vertical middle
             const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
             // Determine mouse position

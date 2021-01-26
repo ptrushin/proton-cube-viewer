@@ -45,11 +45,11 @@ export class Example extends PureComponent {
                 }
             ],
             fieldDefs: [
-                //{code: 'Freight'},
+                {code: 'Freight'},
             ],
             measureDefs: [
                 { code: 'Cnt', funcName: 'count' },
-                //{ code: 'Freight', funcName: 'sum'/*, fieldCode: 'Freight'*/ }
+                { code: 'Freight', funcName: 'sum'/*, fieldCode: 'Freight'*/ }
             ]
         },
         cubeData: {

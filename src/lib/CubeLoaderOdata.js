@@ -12,16 +12,15 @@ function get({url, callback}) {
 }
 
 export function loadAll({url, callback, skip, top, count, rows}) {
-    const urlTop = top ? top : 100000;
     const urlSkip = skip ? skip : 0;
     const urlCount = !count ? '&$count=true' : '';
     get({
-        url: `${url}&$skip=${urlSkip}&$top=${urlTop}${urlCount}`,
+        url: `${url}&$skip=${urlSkip}${urlCount}`,
         callback: (data) => {
             if (!count) count = Number(data['@odata.count'])
             const length = data.value.length
             if ((urlSkip === 0 && length === count) 
-                || (urlSkip > 0 && length < urlTop)) {
+                || (urlSkip > 0 && length < top)) {
                 callback({value: (rows || []).concat(data.value)})
             } else {
                 loadAll({
