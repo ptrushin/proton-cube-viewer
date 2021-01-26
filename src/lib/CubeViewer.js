@@ -8,28 +8,28 @@ const Table = require('olap-cube').model.Table
 
 export default ({ cubeDef, cubeData, onSelectionChanged, additionalActions, localStorageKey, localeText }) => {
     const initDimensionSettings = () => {
+        let dimensionSettings = {}
         if (localStorageKey) {
             let str = localStorage.getItem(localStorageKey);
             if (str) {
                 try {
-                    return JSON.parse(str);
+                    dimensionSettings = JSON.parse(str);
                 } catch(e) {
                 }
             }
         }
 
-        let result = {}
-        let index = 0;
         for (let dimensionDef of cubeDef.dimensionDefs) {
             if (dimensionDef.hidden) continue
-            result[dimensionDef.code] = {
-                index: Number(index),
-                visible: true
+            if (!dimensionSettings[dimensionDef.code]) {
+                dimensionSettings[dimensionDef.code] = {
+                    index: Object.keys(dimensionSettings).length,
+                    visible: true
+                }
             }
-            index++
         }
 
-        return result;
+        return dimensionSettings;
     }
 
     const [selectedKeys, setSelectedKeys] = useState({});
