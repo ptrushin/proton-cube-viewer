@@ -19,13 +19,16 @@ export default ({ cubeDef, cubeData, onSelectionChanged, additionalActions, loca
         }
 
         let result = {}
-        for (let i in cubeDef.dimensionDefs) {
-            let dimensionDef = cubeDef.dimensionDefs[i]
+        let index = 0;
+        for (let dimensionDef of cubeDef.dimensionDefs) {
+            if (dimensionDef.hidden) continue
             result[dimensionDef.code] = {
-                index: Number(i),
+                index: Number(index),
                 visible: true
             }
+            index++
         }
+
         return result;
     }
 
@@ -62,9 +65,10 @@ export default ({ cubeDef, cubeData, onSelectionChanged, additionalActions, loca
     }
 
     const getDimensionsRows = () => {
+        const fieldDefsFromCube = cubeDef.fieldDefs.map(_ => _.code);
         const table = new Table({
             dimensions: cubeDef.dimensionDefs.map(_ => _.code),
-            fields: cubeDef.fieldDefs.map(_ => _.code),
+            fields: fieldDefsFromCube.length === 0 ? ['__Count'] : fieldDefsFromCube,
         })
         let table1 = table.addRows(
             {
@@ -72,10 +76,39 @@ export default ({ cubeDef, cubeData, onSelectionChanged, additionalActions, loca
                 rows: cubeData.cubeRows.map(r => [...table.dimensions, ...table.fields].map(name => r[name] || 0))
             }
         );
-        const summation = (sum, value) => {
-            return [sum[0] + value[0]]
+        const getRollupFunc = (dimensionDef) => {
+            const measureDefs = dimensionDef.measureDefs || cubeDef.measureDefs
+            const funcs = measureDefs.map((measureDef,i) => {
+                let fieldCode = measureDef.fieldCode || measureDef.code
+                let fieldIndex = cubeDef.fieldDefs.indexOf(cubeDef.fieldDefs.filter(_ => _.code === fieldCode)[0]);
+                return measureDef.funcName === 'count'
+                    ? (current, value) => [Number(current[i]) + 1]
+                        : measureDef.funcName === 'sum'
+                        ? (current, value) => [Number(current[i]) + value[fieldIndex]]
+                            : measureDef.func;
+            })
+            return (current, value) => {
+                let a = funcs.map(f => f(current, value));
+                return a;
+            }
+            /*{
+            const measureDef = measureDefs[0]
+            const func = measureDef.funcName === 'count'
+                ? (current, value) => [current[0] + 1]
+                    : measureDef.funcName === 'sum'
+                    ? (current, value) => [current[0] + value[0]]
+                        : measureDef.func;
+            }
+            {
+            const measureDef = measureDefs[1]
+            const func = measureDef.funcName === 'count'
+                ? (current, value) => [current[1] + 1]
+                    : measureDef.funcName === 'sum'
+                    ? (current, value) => [current[1] + value[1]]
+                        : measureDef.func;
+            }
+            return func*/
         }
-        const initialValue = [0]
         let filterFunc = (point) => {
             for (const k of Object.entries(selectedKeys)) {
                 const dimension = k[0];
@@ -87,7 +120,11 @@ export default ({ cubeDef, cubeData, onSelectionChanged, additionalActions, loca
             return true;
         }
 
-        let label = (dimensionTable, key) => !key || key === 0 ? null : (dimensionTable[key] || '???');
+        let label = (dimensionTable, key) => !key || key === 0 
+            ? null 
+            : dimensionTable 
+                ? (dimensionTable[key] || '???') 
+                : key;
 
         let compare = (values) => {
             for (var v of values) {
@@ -106,11 +143,25 @@ export default ({ cubeDef, cubeData, onSelectionChanged, additionalActions, loca
             [a.Label, b.Label]
         ])
 
-        let getRowData = (dimensionCode, dimensionTable) => {
+        let createRow = ({row, dimensionDef, dimensionTable}) => {
+            let dimensionCode = dimensionDef.code
+            let result = { Value: row[0], Label: label(dimensionTable, row[0]), Selected: true, UserSelected: selectedFunc(dimensionCode, row[0]) }
+            let measureDefs = dimensionDef.measureDefs || cubeDef.measureDefs;
+            for (let i in measureDefs) {
+                result[measureDefs[i].code] = (row[Number(i) + 1])[0]
+            }
+            return result;
+        }
+
+        let getRowData = (dimensionDef, dimensionTable) => {
+            let dimensionCode = dimensionDef.code
             let table2 = table1.dice(filterFunc)
-            let selected = table2.rollup(dimensionCode, ['Cnt'], summation, initialValue).rows.map(r => { return { Value: r[0], Label: label(dimensionTable, r[0]), Cnt: r[1], Selected: true, UserSelected: selectedFunc(dimensionCode, r[0]) } });
+            let measures = (dimensionDef.measureDefs || cubeDef.measureDefs).map(_ => _.code)
+            const initialValue = measures.map(m => 0)
+            let rollupFunc = getRollupFunc(dimensionDef)
+            let selected = table2.rollup(dimensionCode, measures, rollupFunc, initialValue).rows.map(r => createRow({row: r, dimensionDef, dimensionTable}));
             let selectedIndex = selected.map(r => r.Value);
-            let others = table1.rollup(dimensionCode, ['Cnt'], summation, initialValue).rows.filter(r => selectedIndex.indexOf(r[0]) < 0)
+            let others = table1.rollup(dimensionCode, measures, rollupFunc, initialValue).rows.filter(r => selectedIndex.indexOf(r[0]) < 0)
                 .map(r => { return { Value: r[0], Label: label(dimensionTable, r[0]), Cnt: 0, Selected: false, UserSelected: selectedFunc(dimensionCode, r[0]) } });
             return [...selected, ...others].sort(sortFunc);
         }
@@ -118,7 +169,7 @@ export default ({ cubeDef, cubeData, onSelectionChanged, additionalActions, loca
         let dimensionsRows = {};
 
         for (let dimensionDef of cubeDef.dimensionDefs) {
-            dimensionsRows[dimensionDef.code] = getRowData(dimensionDef.code, cubeData.dimensionTables[dimensionDef.table]);
+            dimensionsRows[dimensionDef.code] = getRowData(dimensionDef, cubeData.dimensionTables[dimensionDef.table]);
         }
 
         return dimensionsRows;
@@ -130,9 +181,12 @@ export default ({ cubeDef, cubeData, onSelectionChanged, additionalActions, loca
         <Row>
             <Space>
                 <Popover trigger="click" content={
-                    <SortableCheckboxGroup items={cubeDef.dimensionDefs.map(_ => ({code: _.code, title: _.title}))} itemSettings={dimensionSettings}
-                        onChangeItemSettings={changeDimensionSettings}
-                    />
+                    <Space direction="vertical">
+                        <SortableCheckboxGroup items={cubeDef.dimensionDefs.filter(_ => !_.hidden).map(_ => ({code: _.code, title: _.title}))} itemSettings={dimensionSettings}
+                            onChangeItemSettings={changeDimensionSettings}
+                        />
+                        {localStorageKey ? <Button onClick={() => {localStorage.removeItem(localStorageKey); setDimensionSettings(initDimensionSettings())}}>{localeText.resetToDefault}</Button> : null}
+                    </Space>
                 }>
                     <Button>
                         {localeText.configureDimensions} <DownOutlined />
@@ -143,7 +197,7 @@ export default ({ cubeDef, cubeData, onSelectionChanged, additionalActions, loca
         </Row>
         <Row>
             {cubeDef && cubeDef.dimensionDefs && cubeDef.dimensionDefs
-                .filter(d => dimensionSettings[d.code].visible)
+                .filter(d => !d.hidden && dimensionSettings[d.code].visible)
                 .sort((a, b) => dimensionSettings[a.code].index - dimensionSettings[b.code].index)
                 .map((dimension, idx) => {
                     return <Dimension

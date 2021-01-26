@@ -41,6 +41,7 @@ export default ({ items, itemSettings, onChangeItemSettings }) => {
             <Checkbox indeterminate={indeterminate} onChange={(e) => checkAllChange(e.target.checked)} checked={checkedAll}>Все</Checkbox>
             <CheckboxGroup value={visibleItems} onChange={checkChange}>
                 {items
+                    .filter(_ => itemSettings[_.code])
                     .sort((a, b) => itemSettings[a.code].index - itemSettings[b.code].index)
                     .map((item, idx) =>
                         <SortableCheckboxItem key={item.code} code={item.code} title={item.title} index={idx} changeIndex={changeIndex} />

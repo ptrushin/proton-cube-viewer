@@ -21,32 +21,33 @@ export class Example extends PureComponent {
             },
             dimensionDefs: [
                 {
-                    code: 'OrderID', title: 'По типу проблемы',
-                    table: 'Customers',
-                    columnDefs: [
-                        { headerName: "Тип", field: "Label.CompanyName", filter: 'agTextColumnFilter', flex: 2 },
-                        { headerName: "Кол-во", field: "Cnt", width: 80, filter: null }
-                    ],
+                    code: 'OrderID', hidden: true
                 },
                 {
-                    code: 'CustomerID', title: 'По типу проблемы',
+                    code: 'CustomerID', title: 'By customers',
                     table: 'Customers',
                     columnDefs: [
-                        { headerName: "Тип", field: "Label.CompanyName", filter: 'agTextColumnFilter', flex: 2 },
-                        { headerName: "Кол-во", field: "Cnt", width: 80, filter: null }
-                    ],
+                        { headerName: "CompanyName", field: "Label.CompanyName", sortable: true, filter: 'agTextColumnFilter', flex: 2 },
+                        { headerName: "Count", field: "Cnt", sortable: true, width: 80, filter: null },
+                        { headerName: "Freight", field: "Freight", sortable: true, width: 80, filter: null }
+                    ]
                 },
                 {
-                    code: 'EmployeeID', title: 'По сотрудникам',
+                    code: 'EmployeeID', title: 'By employees',
                     table: 'Employees',
                     columnDefs: [
-                        { headerName: "Сотрудник", field: "Label.LastName", filter: 'agTextColumnFilter', flex: 2 },
-                        { headerName: "Кол-во", field: "Cnt", width: 80, filter: null }
+                        { headerName: "LastName", field: "Label.LastName", sortable: true, filter: 'agTextColumnFilter', flex: 2 },
+                        { headerName: "Count", field: "Cnt", sortable: true, width: 80, filter: null },
+                        { headerName: "Freight", field: "Freight", sortable: true, width: 80, filter: null }
                     ]
                 }
             ],
             fieldDefs: [
-                { code: 'Cnt' }
+                {code: 'Freight'},
+            ],
+            measureDefs: [
+                { code: 'Cnt', funcName: 'count' },
+                { code: 'Freight', funcName: 'sum'/*, fieldCode: 'Freight'*/ }
             ]
         },
         cubeData: {
@@ -93,7 +94,7 @@ export class Example extends PureComponent {
         this.setState({ selectedKeys: { ...selectedKeys } })
     }
 
-    getShipmentUrl = () => {
+    getDetailUrl = () => {
         let filters = [];
         let addFilter = (filterName, urlName, keyType) => {
             const keyConv = (key, keyType) => keyType === 'string' ? `%22${key}%22` : key;
@@ -120,14 +121,14 @@ export class Example extends PureComponent {
     }
 
     render() {
-        return (
-                <CubeViewer cubeDef={this.state.cubeDef} cubeData={this.state.cubeData}
-                    onSelectionChanged={this.onSelectionChanged}
-                    additionalActions={[<Button href={this.getShipmentUrl()}>Перейти к партиям</Button>]}
-                    localStorageKey="ShipmentCube"
-                    localeText={{configureDimensions: 'Настроить измерения'}}
-                />
-        );
+        return <div style={{ padding: 10 }}>
+            <CubeViewer cubeDef={this.state.cubeDef} cubeData={this.state.cubeData}
+                onSelectionChanged={this.onSelectionChanged}
+                additionalActions={[<Button key="detailUrl" href={this.getDetailUrl()}>Show details</Button>]}
+                localStorageKey="ShipmentCube"
+                localeText={{ configureDimensions: 'Configure dimensions', resetToDefault: 'Reset to default' }}
+            />
+        </div>
     }
 }
 
