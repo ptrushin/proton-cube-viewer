@@ -1,5 +1,6 @@
-import CubeLoaderOdata from "./CubeLoaderOdata";
+import { loadCubeData, loadCubeRows } from "./CubeLoaderOdata";
 import CubeViewer from "./CubeViewer";
 
-export { CubeLoaderOdata }
+export { loadCubeData }
+export { loadCubeRows }
 export { CubeViewer }
