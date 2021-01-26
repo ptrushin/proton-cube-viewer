@@ -94,3 +94,19 @@ export function loadCubeData({odataPath, cubeDef, callback}) {
     loadDimensionTablesAll({odataPath, cubeDef, callback: cb});
     loadCubeRows({odataPath, cubeDef, callback: cb});
 }
+
+export function getOdataFilter({filters, specialNullCodes}) {
+    const keyConv = (key) => typeof key === 'string' ? `'${key}'` : key;
+    let result = [];
+    const snc = specialNullCodes || [];
+    for (let code in filters) {
+        let values = filters[code];
+        if (values && values.length) {
+            let f = values.filter(_ => _ && snc.indexOf(_) < 0)
+            if (f.length > 0) {
+                result.push('(' + f.map(_ => `${code} eq ${keyConv(_)}`).join(' or ') + ')');
+            }
+        }
+    }
+    return result.join(' and ')
+}

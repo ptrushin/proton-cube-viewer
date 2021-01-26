@@ -2,7 +2,7 @@ import React, { PureComponent } from "react";
 import { withRouter } from "react-router-dom";
 import { Button } from 'antd'
 
-import { loadCubeData, loadCubeRows } from '../lib/CubeLoaderOdata'
+import { loadCubeData, loadCubeRows, getOdataFilter } from '../lib/CubeLoaderOdata'
 import CubeViewer from "../lib/CubeViewer";
 
 export class Example extends PureComponent {
@@ -22,6 +22,7 @@ export class Example extends PureComponent {
             },
             dimensionDefs: [
                 {
+                    // needs to identity
                     code: 'OrderID', hidden: true
                 },
                 {
@@ -44,11 +45,11 @@ export class Example extends PureComponent {
                 }
             ],
             fieldDefs: [
-                {code: 'Freight'},
+                //{code: 'Freight'},
             ],
             measureDefs: [
                 { code: 'Cnt', funcName: 'count' },
-                { code: 'Freight', funcName: 'sum'/*, fieldCode: 'Freight'*/ }
+                //{ code: 'Freight', funcName: 'sum'/*, fieldCode: 'Freight'*/ }
             ]
         },
         cubeData: {
@@ -96,17 +97,8 @@ export class Example extends PureComponent {
     }
 
     getDetailUrl = () => {
-        let filters = [];
-        let addFilter = (filterName, urlName, keyType) => {
-            const keyConv = (key, keyType) => keyType === 'string' ? `'${key}'` : key;
-            if (!this.state.selectedKeys[filterName] || this.state.selectedKeys[filterName].length === 0) return;
-            let f = this.state.selectedKeys[filterName].filter(f => f && f !== 0);
-            if (f.length === 0) return;
-            filters.push('(' + f.map(_ => `${urlName} eq ${keyConv(_, keyType)}`).join(' or ') + ')');
-        }
-        addFilter('CustomerID', 'CustomerID', 'string');
-        addFilter('EmployeeID', 'EmployeeID');
-        return `${this.odataPath}/${this.state.cubeDef.code}?$filter=${filters.join(' and ')}`;
+        const filter = getOdataFilter({filters: this.state.selectedKeys, specialNullCodes: [0]}) 
+        return `${this.odataPath}/${this.state.cubeDef.code}${filter ? `?$filter=${filter}` : ''}`;
     }
 
     render() {
