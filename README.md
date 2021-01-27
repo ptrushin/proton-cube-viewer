@@ -2,7 +2,8 @@
 
 # examples
 
-* https://github.com/ptrushin/proton-cube-viewer/blob/main/src/examples/Example.js
+* Local - https://github.com/ptrushin/proton-cube-viewer/blob/main/src/examples/Example.js
+* CodeSandbox - https://codesandbox.io/s/distracted-spence-csts5
 
 # in the plans
 
