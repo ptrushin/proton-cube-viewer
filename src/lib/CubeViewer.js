@@ -31,7 +31,7 @@ export default ({ cubeDef, cubeData, onSelectionChanged, additionalActions, loca
             if (!dimensionSettings[dimensionDef.code]) {
                 dimensionSettings[dimensionDef.code] = {
                     index: Object.keys(dimensionSettings).length,
-                    visible: true
+                    visible: dimensionDef.visible !== undefined ? dimensionDef.visible : true
                 }
             }
         }
