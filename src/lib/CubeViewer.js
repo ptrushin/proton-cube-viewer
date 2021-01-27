@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { Row, Space, Button, Popover } from 'antd'
 import { DownOutlined } from '@ant-design/icons'
 import Dimension from './Dimension'
@@ -7,6 +7,13 @@ import SortableCheckboxGroup from './SortableCheckboxGroup'
 const Table = require('olap-cube').model.Table
 
 export default ({ cubeDef, cubeData, onSelectionChanged, additionalActions, localStorageKey, localeText }) => {
+    if (!cubeDef || !cubeData || !cubeData.cubeRows || !cubeData.dimensionTables) return null;
+
+    const dimensionDefMap = {};
+    for (const dimensionDef of cubeDef.dimensionDefs) {
+        dimensionDefMap[dimensionDef.code] = dimensionDef;
+    }
+
     const initDimensionSettings = () => {
         let dimensionSettings = {}
         if (localStorageKey) {
@@ -32,10 +39,27 @@ export default ({ cubeDef, cubeData, onSelectionChanged, additionalActions, loca
         return dimensionSettings;
     }
 
-    const [selectedKeys, setSelectedKeys] = useState({});
-    const [dimensionSettings, setDimensionSettings] = useState(initDimensionSettings());
+    const initTableStructure = () => {
+        console.trace();
+        return new Table({
+            dimensions: cubeDef.dimensionDefs.map(_ => _.code),
+            fields: cubeDef.fieldDefs.map(_ => _.code),
+        })
+    }
 
-    if (!cubeData || !cubeData.cubeRows) return null;
+    const initTableRows = (tableStructure, cubeData) => {
+        return tableStructure.addRows(
+            {
+                header: [...tableStructure.dimensions, ...tableStructure.fields],
+                rows: cubeData.cubeRows.map(r => [...tableStructure.dimensions, ...tableStructure.fields].map(name => r[name] || 0))
+            }
+        );
+    }
+
+    const [selectedKeys, setSelectedKeys] = useState({});
+    const [dimensionSettings, setDimensionSettings] = useState(initDimensionSettings);
+    const tableStructure = useMemo(initTableStructure, [cubeDef]);
+    const tableRows = useMemo(() => initTableRows(tableStructure, cubeData), [tableStructure, cubeData]);
 
     const changeDimensionSettings = (dimensionSettings) => {
         setDimensionSettings(dimensionSettings);
@@ -64,19 +88,12 @@ export default ({ cubeDef, cubeData, onSelectionChanged, additionalActions, loca
         }
     }
 
+    const isVisibleDimension = (dimensionDef) => {
+        return !dimensionDef.hidden && (dimensionSettings[dimensionDef.code] || {}).visible;
+    }
+
     const getDimensionsRows = () => {
-        const table = new Table({
-            dimensions: cubeDef.dimensionDefs.map(_ => _.code),
-            fields: cubeDef.fieldDefs.map(_ => _.code),
-        })
-        let table1 = table.addRows(
-            {
-                header: [...table.dimensions, ...table.fields],
-                rows: cubeData.cubeRows.map(r => [...table.dimensions, ...table.fields].map(name => r[name] || 0))
-            }
-        );
-        const getRollupFunc = (dimensionDef) => {
-            const measureDefs = dimensionDef.measureDefs || cubeDef.measureDefs
+        const getRollupFunc = (measureDefs) => {
             const funcs = measureDefs.map((measureDef,i) => {
                 let fieldCode = measureDef.fieldCode || measureDef.code
                 let fieldIndex = cubeDef.fieldDefs.indexOf(cubeDef.fieldDefs.filter(_ => _.code === fieldCode)[0]);
@@ -87,21 +104,21 @@ export default ({ cubeDef, cubeData, onSelectionChanged, additionalActions, loca
                             : measureDef.func;
             })
             return (current, value) => {
-                let a = funcs.map(f => f(current, value));
-                return a;
+                let func = funcs.map(f => f(current, value));
+                return func;
             }
         }
-        let getFilterFunc = (dimensionDef) => {
-            return (point) => {
-                for (const k of Object.entries(selectedKeys)) {
-                    const dimension = k[0];
-                    const keys = k[1];
-                    if (!keys || keys.length === 0) continue;
-                    const index = table.dimensions.indexOf(dimension);
-                    if (keys.indexOf(point[index]) < 0) return false;
-                }
-                return true;
+        let filterFunc = (point) => {
+            for (const k of Object.entries(selectedKeys)) {
+                const dimensionCode = k[0];
+                const dimensionDef = dimensionDefMap[dimensionCode];
+                if (!isVisibleDimension(dimensionDef)) continue;
+                const keys = k[1];
+                if (!keys || keys.length === 0) continue;
+                const index = tableStructure.dimensions.indexOf(dimensionCode);
+                if (keys.indexOf(point[index]) < 0) return false;
             }
+            return true;
         }
 
         let label = (dimensionTable, key) => !key || key === 0 
@@ -137,15 +154,17 @@ export default ({ cubeDef, cubeData, onSelectionChanged, additionalActions, loca
             return result;
         }
 
+        let filteredTable = tableRows.dice(filterFunc)
+
         let getRowData = (dimensionDef, dimensionTable) => {
-            let dimensionCode = dimensionDef.code
-            let table2 = table1.dice(getFilterFunc(dimensionDef))
-            let measures = (dimensionDef.measureDefs || cubeDef.measureDefs).map(_ => _.code)
-            const initialValue = measures.map(m => 0)
-            let rollupFunc = getRollupFunc(dimensionDef)
-            let selected = table2.rollup(dimensionCode, measures, rollupFunc, initialValue).rows.map(r => createRow({row: r, dimensionDef, dimensionTable, selected: true}));
+            const dimensionCode = dimensionDef.code
+            const measureDefs = (dimensionDef.measureDefs || cubeDef.measureDefs)
+            const measureDefsCodes = measureDefs.map(_ => _.code)
+            const initialValue = measureDefsCodes.map(m => 0)
+            let rollupFunc = getRollupFunc(measureDefs)
+            let selected = filteredTable.rollup(dimensionCode, measureDefsCodes, rollupFunc, initialValue).rows.map(r => createRow({row: r, dimensionDef, dimensionTable, selected: true}));
             let selectedIndex = selected.map(r => r.Value);
-            let others = table1.rollup(dimensionCode, measures, rollupFunc, initialValue).rows.filter(r => selectedIndex.indexOf(r[0]) < 0)
+            let others = tableRows.rollup(dimensionCode, measureDefsCodes, rollupFunc, initialValue).rows.filter(r => selectedIndex.indexOf(r[0]) < 0)
                 .map(r => createRow({row: r, dimensionDef, dimensionTable, selected: false}));
             return [...selected, ...others].sort(sortFunc);
         }
@@ -153,13 +172,14 @@ export default ({ cubeDef, cubeData, onSelectionChanged, additionalActions, loca
         let dimensionsRows = {};
 
         for (let dimensionDef of cubeDef.dimensionDefs) {
+            if (!isVisibleDimension(dimensionDef)) continue;
             dimensionsRows[dimensionDef.code] = getRowData(dimensionDef, cubeData.dimensionTables[dimensionDef.table]);
         }
 
         return dimensionsRows;
     }
 
-    let dimensionsRows = getDimensionsRows();
+    const dimensionsRows = useMemo(getDimensionsRows, [tableRows, selectedKeys])
 
     return <div>
         <Row>
