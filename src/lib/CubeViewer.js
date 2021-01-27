@@ -179,7 +179,7 @@ export default ({ cubeDef, cubeData, onSelectionChanged, additionalActions, loca
         return dimensionsRows;
     }
 
-    const dimensionsRows = useMemo(getDimensionsRows, [tableRows, selectedKeys])
+    const dimensionsRows = useMemo(getDimensionsRows, [tableRows, selectedKeys, dimensionSettings])
 
     return <div>
         <Row>
