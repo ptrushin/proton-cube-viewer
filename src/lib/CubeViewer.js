@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import { Row, Space, Button, Popover } from 'antd'
 import { DownOutlined } from '@ant-design/icons'
 import Dimension from './Dimension'
@@ -6,7 +6,7 @@ import SortableCheckboxGroup from './SortableCheckboxGroup'
 
 const Table = require('olap-cube').model.Table
 
-export default ({ cubeDef, cubeData, onSelectionChanged, additionalActions, localStorageKey, localeText }) => {
+export default ({ cubeDef, cubeData, onSelectionChanged, additionalActions, localStorageKey, localeText, selectedKeys: extSelectedKeys }) => {
     if (!cubeDef || !cubeData || !cubeData.cubeRows || !cubeData.dimensionTables) return null;
 
     const dimensionDefMap = {};
@@ -40,7 +40,7 @@ export default ({ cubeDef, cubeData, onSelectionChanged, additionalActions, loca
     }
 
     const initTableStructure = () => {
-        console.trace();
+        console.log('initTableStructure');
         return new Table({
             dimensions: cubeDef.dimensionDefs.map(_ => _.code),
             fields: cubeDef.fieldDefs.map(_ => _.code),
@@ -48,6 +48,7 @@ export default ({ cubeDef, cubeData, onSelectionChanged, additionalActions, loca
     }
 
     const initTableRows = (tableStructure, cubeData) => {
+        console.log('initTableRows');
         return tableStructure.addRows(
             {
                 header: [...tableStructure.dimensions, ...tableStructure.fields],
@@ -56,7 +57,12 @@ export default ({ cubeDef, cubeData, onSelectionChanged, additionalActions, loca
         );
     }
 
-    const [selectedKeys, setSelectedKeys] = useState({});
+    const extSetSelectedKeys = useCallback((newSelectedKeys, { dimensionCode, keys }) => {if (onSelectionChanged) onSelectionChanged({ selectedKeys: newSelectedKeys, dimensionCode, keys: keys });}, [onSelectionChanged]);
+
+    const [selectedKeys, setSelectedKeys] = extSelectedKeys === undefined
+        ? useState({})
+        : [extSelectedKeys, extSetSelectedKeys];
+      
     const [dimensionSettings, setDimensionSettings] = useState(initDimensionSettings);
     const tableStructure = useMemo(initTableStructure, [cubeDef]);
     const tableRows = useMemo(() => initTableRows(tableStructure, cubeData), [tableStructure, cubeData]);
@@ -69,6 +75,8 @@ export default ({ cubeDef, cubeData, onSelectionChanged, additionalActions, loca
     }
 
     const selectionChanged = ({ dimensionCode, keys }) => {
+        let dimensionsDef = dimensionDefMap[dimensionCode];
+        if (!dimensionsDef) return;
         let currentKeys = selectedKeys[dimensionCode];
         let newKeys = keys.sort((a, b) => a - b);
         let isEqual = false;
@@ -83,8 +91,8 @@ export default ({ cubeDef, cubeData, onSelectionChanged, additionalActions, loca
         }
         if (!isEqual) {
             const newSelectedKeys = { ...selectedKeys, [dimensionCode]: newKeys }
-            setSelectedKeys(newSelectedKeys);
-            if (onSelectionChanged) onSelectionChanged({ selectedKeys: newSelectedKeys, dimensionCode, keys: newKeys });
+            setSelectedKeys(newSelectedKeys, { dimensionCode, keys });
+            if (extSelectedKeys === undefined && onSelectionChanged) onSelectionChanged({ selectedKeys: newSelectedKeys, dimensionCode, keys: newKeys });
         }
     }
 
@@ -93,6 +101,7 @@ export default ({ cubeDef, cubeData, onSelectionChanged, additionalActions, loca
     }
 
     const getDimensionsRows = () => {
+        console.log('getDimensionsRows')
         const getRollupFunc = (measureDefs) => {
             const funcs = measureDefs.map((measureDef,i) => {
                 let fieldCode = measureDef.fieldCode || measureDef.code
@@ -210,7 +219,7 @@ export default ({ cubeDef, cubeData, onSelectionChanged, additionalActions, loca
                         id={dimension.code}
                         index={idx}
                         rows={dimensionsRows[dimension.code]}
-                        clearFilters={() => setSelectedKeys({ ...selectedKeys, [dimension.code]: null })}
+                        clearFilters={() => selectionChanged({ keys: [], dimensionCode: dimension.code })}
                         deleteDimension={() => changeDimensionSettings({...dimensionSettings, [dimension.code]: {...dimensionSettings[dimension.code], visible: false}})}
                         dimension={dimension}
                         selectedKeys={selectedKeys[dimension.code]}
