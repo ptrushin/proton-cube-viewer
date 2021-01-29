@@ -7,7 +7,9 @@
 
 # in the plans
 
-* replace aggrid to ant table
+* replace aggrid with ant table
+* add snowflake schema
+* add time dimension
 
 # npm
 
