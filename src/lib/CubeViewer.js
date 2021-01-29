@@ -5,13 +5,22 @@ import Dimension from './Dimension'
 import SortableCheckboxGroup from './SortableCheckboxGroup'
 
 const Table = require('olap-cube').model.Table
+export const defaults = {
+    Null: 0
+}
 
 export default ({ cubeDef, cubeData, onSelectionChanged, additionalActions, localStorageKey, localeText, selectedKeys: extSelectedKeys }) => {
     if (!cubeDef || !cubeData || !cubeData.cubeRows || !cubeData.dimensionTables) return null;
 
     const dimensionDefMap = {};
+    const dimensionDefNullMap = {};
     for (const dimensionDef of cubeDef.dimensionDefs) {
         dimensionDefMap[dimensionDef.code] = dimensionDef;
+        dimensionDefNullMap[dimensionDef.code] = dimensionDef.null === undefined ? defaults.Null : dimensionDef.null;
+    }
+    const fieldDefNullMap = {};
+    for (const fieldDef of cubeDef.fieldDefs) {
+        dimensionDefNullMap[fieldDef.code] = fieldDef.null === undefined ? defaults.Null : fieldDef.null;
     }
 
     const initDimensionSettings = () => {
@@ -47,12 +56,14 @@ export default ({ cubeDef, cubeData, onSelectionChanged, additionalActions, loca
         })
     }
 
-    const initTableRows = (tableStructure, cubeData) => {
+    const initTableRows = () => {
         console.log('initTableRows');
+        const dimensions = cubeDef.dimensionDefs.map(_ => _.code);
+        const fields = cubeDef.fieldDefs.map(_ => _.code);
         return tableStructure.addRows(
             {
-                header: [...tableStructure.dimensions, ...tableStructure.fields],
-                rows: cubeData.cubeRows.map(r => [...tableStructure.dimensions, ...tableStructure.fields].map(name => r[name] || 0))
+                header: [...dimensions, ...fields],
+                rows: cubeData.cubeRows.map(r => [...dimensions.map(name => r[name] || dimensionDefNullMap[name]), ...fields.map(name => r[name] || fieldDefNullMap[name])])
             }
         );
     }
@@ -65,7 +76,7 @@ export default ({ cubeDef, cubeData, onSelectionChanged, additionalActions, loca
       
     const [dimensionSettings, setDimensionSettings] = useState(initDimensionSettings);
     const tableStructure = useMemo(initTableStructure, [cubeDef]);
-    const tableRows = useMemo(() => initTableRows(tableStructure, cubeData), [tableStructure, cubeData]);
+    const tableRows = useMemo(initTableRows, [cubeDef, cubeData]);
 
     const changeDimensionSettings = (dimensionSettings) => {
         setDimensionSettings(dimensionSettings);
