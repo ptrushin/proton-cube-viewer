@@ -1,3 +1,41 @@
-.ag-theme-balham .ag-row.unselected-row {
+.proton-cube-viewer-dimension {
+    width: 400px;
+}
+
+.proton-cube-viewer-dimension .ag-theme-balham {
+    width: 400px;
+    height: 400px;
+}
+
+.proton-cube-viewer-dimension .proton-cube-viewer-antd {
+    border: 1px solid lightgray
+}
+
+.proton-cube-viewer-dimension .ag-theme-balham .ag-row.unselected-row {
     color: #BBBBBB
+}
+
+.proton-cube-viewer-dimension .ant-table.ant-table-small .ant-table-tbody > tr > td {
+    padding: 2px 8px;
+}
+
+.proton-cube-viewer-dimension .ant-table.ant-table-small .ant-table-thead > tr > th {
+    padding: 2px 8px;
+}
+
+.proton-cube-viewer-dimension .ant-table.ant-table-small .ant-table-thead .ant-table-column-sorters {
+    padding: 0px;
+}
+
+.proton-cube-viewer-dimension td.ant-table-column-sort {
+    background-color: inherit;
+}
+
+.proton-cube-viewer-dimension .ant-table-body {
+    height: 400px;
+}
+
+.proton-cube-viewer-dimension .ant-table.ant-table-small {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+    font-size: 12px;
 }

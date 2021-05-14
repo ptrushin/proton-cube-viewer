@@ -5,11 +5,11 @@ import { Button } from 'antd'
 import { loadCubeData, loadCubeRows, getOdataFilter } from '../lib/CubeLoaderOdata'
 import CubeViewer from "../lib/CubeViewer";
 
-import DimensionViewAntdTable from '../lib/DimensionViewAntdTable'
-import AntdTableContainsFilter from '../lib/AntdTableContainsFilter'
+import DimensionViewAgGrid from '../lib/DimensionViewAgGrid'
 
-export class Example extends PureComponent {
+export class ExampleAgGrid extends PureComponent {
     odataPath = 'https://services.odata.org/V4/Northwind/Northwind.svc';
+
     state = {
         cubeDef: {
             code: 'Orders',
@@ -32,26 +32,18 @@ export class Example extends PureComponent {
                     code: 'CustomerID', title: 'By customers',
                     table: 'Customers',
                     columnDefs: [
-                        {
-                            title: 'CompanyName', dataIndex: ['Label', 'CompanyName'],
-                            sorter: (a, b) => a.Label.CompanyName.localeCompare(b.Label.CompanyName),
-                            ...AntdTableContainsFilter(['Label', 'CompanyName']),
-                        },
-                        { title: 'Count', dataIndex: 'Cnt', align: 'right', width: 80 },
-                        { title: 'Freight', dataIndex: 'Freight', align: 'right', width: 80 },
+                        { headerName: "CompanyName", field: "Label.CompanyName", sortable: true, filter: 'agTextColumnFilter', flex: 2 },
+                        { headerName: "Count", field: "Cnt", sortable: true, width: 80, filter: null },
+                        { headerName: "Freight", field: "Freight", sortable: true, width: 80, filter: null }
                     ]
                 },
                 {
                     code: 'EmployeeID', title: 'By employees',
                     table: 'Employees',
                     columnDefs: [
-                        {
-                            title: "LastName", dataIndex: ['Label', 'LastName'],
-                            sorter: (a, b) => a.Label.CompanyName.localeCompare(b.Label.CompanyName),
-                            ...AntdTableContainsFilter(['Label', 'CompanyName'])
-                        },
-                        { title: "Count", dataIndex: "Cnt" },
-                        { title: "Freight", dataIndex: "Freight" }
+                        { headerName: "LastName", field: "Label.LastName", sortable: true, filter: 'agTextColumnFilter', flex: 2 },
+                        { headerName: "Count", field: "Cnt", sortable: true, width: 80, filter: null },
+                        { headerName: "Freight", field: "Freight", sortable: true, width: 80, filter: null }
                     ]
                 }
             ],
@@ -127,11 +119,11 @@ export class Example extends PureComponent {
                         ResetToDefault: 'Reset to default',
                         All: 'All'
                     }}
-                    dimensionViewComponent1={DimensionViewAntdTable}
+                    dimensionViewComponent={DimensionViewAgGrid}
                 />
             </div>
         </>
     }
 }
 
-export default withRouter(Example);
+export default withRouter(ExampleAgGrid);

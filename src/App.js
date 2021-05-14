@@ -6,12 +6,14 @@ import locale from 'antd/es/locale/en_US'
 //import 'moment/locale/ru';
 import 'antd/dist/antd.css';
 import Example from './examples/Example'
+import ExampleAgGrid from './examples/ExampleAgGrid'
 
 function App() {
     return <BrowserRouter>
         <ConfigProvider locale={locale}>
             <Route exact path='/' render={(props) => <Example {...props} />} />
             <Route path='/Example' render={(props) => <Example {...props} />} />
+            <Route path='/ExampleAgGrid' render={(props) => <ExampleAgGrid {...props} />} />
         </ConfigProvider>
     </BrowserRouter>
 }

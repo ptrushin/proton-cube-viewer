@@ -9,7 +9,16 @@ export const defaults = {
     Null: 0
 }
 
-export default ({ cubeDef, cubeData, onSelectionChanged, additionalActions, localStorageKey, localeText, selectedKeys: extSelectedKeys }) => {
+export default ({ 
+    cubeDef, 
+    cubeData, 
+    onSelectionChanged, 
+    additionalActions, 
+    localStorageKey, 
+    localeText, 
+    selectedKeys: extSelectedKeys,
+    dimensionViewComponent
+ }) => {
     if (!cubeDef || !cubeData || !cubeData.cubeRows || !cubeData.dimensionTables) return null;
 
     const dimensionDefMap = {};
@@ -49,7 +58,6 @@ export default ({ cubeDef, cubeData, onSelectionChanged, additionalActions, loca
     }
 
     const initTableStructure = () => {
-        console.log('initTableStructure');
         return new Table({
             dimensions: cubeDef.dimensionDefs.map(_ => _.code),
             fields: cubeDef.fieldDefs.map(_ => _.code),
@@ -57,7 +65,6 @@ export default ({ cubeDef, cubeData, onSelectionChanged, additionalActions, loca
     }
 
     const initTableRows = () => {
-        console.log('initTableRows');
         const dimensions = cubeDef.dimensionDefs.map(_ => _.code);
         const fields = cubeDef.fieldDefs.map(_ => _.code);
         return tableStructure.addRows(
@@ -112,7 +119,6 @@ export default ({ cubeDef, cubeData, onSelectionChanged, additionalActions, loca
     }
 
     const getDimensionsRows = () => {
-        console.log('getDimensionsRows')
         const getRollupFunc = (measureDefs) => {
             const funcs = measureDefs.map((measureDef,i) => {
                 let fieldCode = measureDef.fieldCode || measureDef.code
@@ -201,7 +207,7 @@ export default ({ cubeDef, cubeData, onSelectionChanged, additionalActions, loca
 
     const dimensionsRows = useMemo(getDimensionsRows, [tableRows, selectedKeys, dimensionSettings])
 
-    return <div>
+    return <div className="proton-cube-viewer">
         <Row>
             <Space>
                 <Popover trigger="click" content={
@@ -226,6 +232,7 @@ export default ({ cubeDef, cubeData, onSelectionChanged, additionalActions, loca
                 .sort((a, b) => dimensionSettings[a.code].index - dimensionSettings[b.code].index)
                 .map((dimension, idx) => {
                     return <Dimension
+                        dimensionViewComponent={dimensionViewComponent}
                         key={idx}
                         id={dimension.code}
                         index={idx}
@@ -234,7 +241,7 @@ export default ({ cubeDef, cubeData, onSelectionChanged, additionalActions, loca
                         deleteDimension={() => changeDimensionSettings({...dimensionSettings, [dimension.code]: {...dimensionSettings[dimension.code], visible: false}})}
                         dimension={dimension}
                         selectedKeys={selectedKeys[dimension.code]}
-                        onSelectionChanged={(params) => selectionChanged({ dimensionCode: dimension.code, keys: params.api.getSelectedRows().map(r => r.Value) })}
+                        onSelectionChanged={(keys) => selectionChanged({ dimensionCode: dimension.code, keys: keys })}
                     />
                 })}
         </Row>
