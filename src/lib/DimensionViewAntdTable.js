@@ -3,6 +3,7 @@ import { Table } from 'antd'
 import './CubeViewer.css';
 
 export default ({ rows, selectedKeys, dimension, onSelectionChanged }) => {
+    console.log('---', selectedKeys);
     return <div className="proton-cube-viewer-antd">
         <Table
             columns={dimension.columnDefs}
@@ -13,7 +14,7 @@ export default ({ rows, selectedKeys, dimension, onSelectionChanged }) => {
             rowKey="Value"
             rowSelection={{
                 type: 'checkbox',
-                selectedKeys,
+                selectedRowKeys: selectedKeys,
                 onChange: selectedKeys => onSelectionChanged(selectedKeys)
             }}
         />
