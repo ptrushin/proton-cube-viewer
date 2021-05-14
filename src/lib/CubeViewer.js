@@ -242,6 +242,7 @@ export default ({
                         dimension={dimension}
                         selectedKeys={selectedKeys[dimension.code]}
                         onSelectionChanged={(keys) => selectionChanged({ dimensionCode: dimension.code, keys: keys })}
+                        localeText={localeText}
                     />
                 })}
         </Row>

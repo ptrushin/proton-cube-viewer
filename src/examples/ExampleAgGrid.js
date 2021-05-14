@@ -117,7 +117,11 @@ export class ExampleAgGrid extends PureComponent {
                     localeText={{
                         ConfigureDimensions: 'Configure dimensions',
                         ResetToDefault: 'Reset to default',
-                        All: 'All'
+                        All: 'All',
+                        ClearFilters: 'Clear filters',
+                        ExcludeDimension: 'Exclude dimension',
+                        Search: 'Search',
+                        Reset: 'Reset'
                     }}
                     dimensionViewComponent={DimensionViewAgGrid}
                 />

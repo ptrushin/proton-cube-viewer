@@ -13,14 +13,10 @@ function getValue(record, dataIndex, level = 0) {
     }
 }
 
-export default dataIndex => ({
+export default (dataIndex, localeText) => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
         <div style={{ padding: 8 }}>
             <Input
-                /*ref={node => {
-                    this.searchInput = node;
-                }}*/
-                placeholder={`Search ${dataIndex}`}
                 value={selectedKeys[0]}
                 onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
                 onPressEnter={confirm}
@@ -34,24 +30,11 @@ export default dataIndex => ({
                     size="small"
                     style={{ width: 90 }}
                 >
-                    Search
-          </Button>
+                    {localeText.Search}
+                </Button>
                 <Button onClick={clearFilters} size="small" style={{ width: 90 }}>
-                    Reset
-          </Button>
-                <Button
-                    type="link"
-                    size="small"
-                    onClick={() => {
-                        confirm({ closeDropdown: false });
-                        this.setState({
-                            searchText: selectedKeys[0],
-                            searchedColumn: dataIndex,
-                        });
-                    }}
-                >
-                    Filter
-          </Button>
+                    {localeText.Reset}
+                </Button>
             </Space>
         </div>
     ),

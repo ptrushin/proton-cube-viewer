@@ -8,6 +8,15 @@ import CubeViewer from "../lib/CubeViewer";
 import DimensionViewAntdTable from '../lib/DimensionViewAntdTable'
 import AntdTableContainsFilter from '../lib/AntdTableContainsFilter'
 
+const localeText={
+    ConfigureDimensions: 'Configure dimensions',
+    ResetToDefault: 'Reset to default',
+    All: 'All',
+    ClearFilters: 'Clear filters',
+    ExcludeDimension: 'Exclude dimension',
+    Search: 'Search',
+    Reset: 'Reset'
+};
 export class Example extends PureComponent {
     odataPath = 'https://services.odata.org/V4/Northwind/Northwind.svc';
     state = {
@@ -35,7 +44,7 @@ export class Example extends PureComponent {
                         {
                             title: 'CompanyName', dataIndex: ['Label', 'CompanyName'],
                             sorter: (a, b) => a.Label.CompanyName.localeCompare(b.Label.CompanyName),
-                            ...AntdTableContainsFilter(['Label', 'CompanyName']),
+                            ...AntdTableContainsFilter(['Label', 'CompanyName'], localeText),
                         },
                         { title: 'Count', dataIndex: 'Cnt', align: 'right', width: 80 },
                         { title: 'Freight', dataIndex: 'Freight', align: 'right', width: 80 },
@@ -48,7 +57,7 @@ export class Example extends PureComponent {
                         {
                             title: "LastName", dataIndex: ['Label', 'LastName'],
                             sorter: (a, b) => a.Label.CompanyName.localeCompare(b.Label.CompanyName),
-                            ...AntdTableContainsFilter(['Label', 'CompanyName'])
+                            ...AntdTableContainsFilter(['Label', 'LastName'], localeText)
                         },
                         { title: "Count", dataIndex: "Cnt" },
                         { title: "Freight", dataIndex: "Freight" }
@@ -122,11 +131,7 @@ export class Example extends PureComponent {
                         <Button key="detailUrl" href={this.getDetailUrl()}>Show details</Button>
                     ]}
                     localStorageKey="ShipmentCube"
-                    localeText={{
-                        ConfigureDimensions: 'Configure dimensions',
-                        ResetToDefault: 'Reset to default',
-                        All: 'All'
-                    }}
+                    localeText={localeText}
                     dimensionViewComponent1={DimensionViewAntdTable}
                 />
             </div>

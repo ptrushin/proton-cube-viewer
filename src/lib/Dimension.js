@@ -12,6 +12,7 @@ export default ({
     deleteDimension, 
     dimension, 
     onSelectionChanged,
+    localeText,
     dimensionViewComponent: DimensionViewComponent = DimensionViewAntdTable
 }) => {
     return <div style={{
@@ -21,12 +22,12 @@ export default ({
         <Row>
             <Col><span style={{ fontSize: 16 }}>{dimension.title}</span></Col>
             <Col><Button shape="circle" type="text" icon={<FilterOutlined style={{ fontSize: '20px' }} />}
-                title={'Очистить все фильтры'}
+                title={localeText.ClearFilters}
                 onClick={clearFilters}>
                 <CloseOutlined style={{ fontSize: 16, position: 'absolute', margin: '6px -10px' }} />
             </Button></Col>
             <Col><Button shape="circle" type="text"
-                title={'Убрать измерение'}
+                title={localeText.ExcludeDimension}
                 onClick={deleteDimension}>
                 <CloseOutlined style={{ fontSize: 20 }} />
             </Button></Col>
@@ -40,6 +41,7 @@ export default ({
                     dimension={dimension}
                     selectedKeys={selectedKeys}
                     onSelectionChanged={onSelectionChanged}
+                    localeText={localeText}
                 />
             </div>
         </Row>
