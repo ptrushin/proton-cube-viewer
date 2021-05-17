@@ -3,7 +3,6 @@ import { Table } from 'antd'
 import './CubeViewer.css';
 
 export default ({ rows, selectedKeys, dimension, onSelectionChanged }) => {
-    console.log('---', selectedKeys);
     return <div className="proton-cube-viewer-antd">
         <Table
             columns={dimension.columnDefs}

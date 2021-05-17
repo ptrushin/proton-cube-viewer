@@ -47,7 +47,7 @@ export class Example extends PureComponent {
                             ...AntdTableContainsFilter(['Label', 'CompanyName'], localeText),
                         },
                         { title: 'Count', dataIndex: 'Cnt', align: 'right', width: 80 },
-                        { title: 'Freight', dataIndex: 'Freight', align: 'right', width: 80 },
+                        { title: 'Freight', dataIndex: 'Freight', align: 'right', width: 80, render: v => v.toFixed(2) },
                     ]
                 },
                 {
@@ -59,8 +59,8 @@ export class Example extends PureComponent {
                             sorter: (a, b) => a.Label.CompanyName.localeCompare(b.Label.CompanyName),
                             ...AntdTableContainsFilter(['Label', 'LastName'], localeText)
                         },
-                        { title: "Count", dataIndex: "Cnt" },
-                        { title: "Freight", dataIndex: "Freight" }
+                        { title: "Count", dataIndex: "Cnt", align: 'right', width: 80 },
+                        { title: "Freight", dataIndex: "Freight", align: 'right', width: 80, render: v => v.toFixed(2) }
                     ]
                 }
             ],
@@ -132,7 +132,8 @@ export class Example extends PureComponent {
                     ]}
                     localStorageKey="ShipmentCube"
                     localeText={localeText}
-                    dimensionViewComponent1={DimensionViewAntdTable}
+                    //dimensionViewComponent={DimensionViewAntdTable}
+                    isProcessing={this.state.isProcessing}
                 />
             </div>
         </>

@@ -124,6 +124,7 @@ export class ExampleAgGrid extends PureComponent {
                         Reset: 'Reset'
                     }}
                     dimensionViewComponent={DimensionViewAgGrid}
+                    isProcessing={this.state.isProcessing}
                 />
             </div>
         </>

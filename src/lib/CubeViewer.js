@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useCallback } from "react";
-import { Row, Space, Button, Popover } from 'antd'
+import { Row, Space, Button, Popover, Spin } from 'antd'
 import { DownOutlined } from '@ant-design/icons'
 import Dimension from './Dimension'
 import SortableCheckboxGroup from './SortableCheckboxGroup'
@@ -17,8 +17,11 @@ export default ({
     localStorageKey, 
     localeText, 
     selectedKeys: extSelectedKeys,
-    dimensionViewComponent
+    dimensionViewComponent,
+    isProcessing
  }) => {
+    if (isProcessing) return <Spin size="large" />
+
     if (!cubeDef || !cubeData || !cubeData.cubeRows || !cubeData.dimensionTables) return null;
 
     const dimensionDefMap = {};
@@ -126,7 +129,7 @@ export default ({
                 return measureDef.funcName === 'count'
                     ? (current, value) => [Number(current[i]) + 1]
                         : measureDef.funcName === 'sum'
-                        ? (current, value) => [Number(current[i]) + value[fieldIndex]]
+                        ? (current, value) => [Number(current[i]) + parseFloat(value[fieldIndex])]
                             : measureDef.func;
             })
             return (current, value) => {
