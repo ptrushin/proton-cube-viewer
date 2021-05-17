@@ -6,6 +6,7 @@ import { ContextFilter, stringSorter, numberSorter } from './AntdTableExt';
 export default ({ rows, selectedKeys, dimension, onSelectionChanged, localeText, keyName, selectedName }) => {
     return <div className="proton-cube-viewer-antd">
         <Table
+            rowClassName={(record, index) => !record[selectedName] ? 'unselected-row' : undefined}
             columns={dimension.viewColumns}
             dataSource={rows}
             scroll={{ y: 400 }}

@@ -15,6 +15,10 @@
     color: #BBBBBB
 }
 
+.proton-cube-viewer-dimension .unselected-row {
+    color: #BBBBBB
+}
+
 .proton-cube-viewer-dimension .ant-table.ant-table-small .ant-table-tbody > tr > td {
     padding: 2px 8px;
 }
