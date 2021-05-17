@@ -6,5 +6,4 @@ export { loadCubeData }
 export { loadCubeRows }
 export { CubeViewer }
 export { defaults }
-export { DimensionViewAgGrid }
 export { DimensionViewAntdTable }
