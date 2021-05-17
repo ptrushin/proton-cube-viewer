@@ -5,7 +5,6 @@ import { Button } from 'antd'
 import { loadCubeData, loadCubeRows, getOdataFilter } from '../lib/CubeLoaderOdata'
 import CubeViewer from "../lib/CubeViewer";
 
-import DimensionViewAntdTable from '../lib/DimensionViewAntdTable'
 import AntdTableContainsFilter from '../lib/AntdTableContainsFilter'
 
 const localeText={
@@ -132,7 +131,6 @@ export class Example extends PureComponent {
                     ]}
                     localStorageKey="ShipmentCube"
                     localeText={localeText}
-                    //dimensionViewComponent={DimensionViewAntdTable}
                     isProcessing={this.state.isProcessing}
                 />
             </div>

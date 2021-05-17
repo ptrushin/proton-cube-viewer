@@ -1,6 +1,6 @@
 {
   "name": "proton-cube-viewer",
-  "version": "0.1.8",
+  "version": "1.0.0",
   "description": "",
   "author": "ptrushin",
   "keywords": [
@@ -50,15 +50,15 @@
     ]
   },
   "devDependencies": {
-    "antd": "^4.6.6",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
-    "react-router-dom": "^5.2.0",
-    "react-scripts": "3.4.3",
-    "strict-mode": "^1.1.5",
     "ag-grid-community": "^23.2.1",
     "ag-grid-enterprise": "^23.2.1",
-    "ag-grid-react": "^23.2.1"
+    "ag-grid-react": "^23.2.1",
+    "antd": "^4.15.5",
+    "react": "^16.14.0",
+    "react-dom": "^16.14.0",
+    "react-router-dom": "^5.2.0",
+    "react-scripts": "3.4.3",
+    "strict-mode": "^1.1.5"
   },
   "private": false,
   "babel": {

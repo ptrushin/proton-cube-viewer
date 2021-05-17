@@ -5,12 +5,13 @@
 
 # examples
 
-* Local - https://github.com/ptrushin/proton-cube-viewer/blob/main/src/examples/Example.js
+* Local
+** AntdTable (Default) - https://github.com/ptrushin/proton-cube-viewer/blob/main/src/examples/Example.js
+** AgGrid - https://github.com/ptrushin/proton-cube-viewer/blob/main/src/examples/ExampleAgGid.js
 * CodeSandbox - https://codesandbox.io/s/distracted-spence-csts5
 
 # in the plans
 
-* replace aggrid with ant table
 * add snowflake schema
 * add time dimension
 
