@@ -3,6 +3,7 @@ import { Row, Space, Button, Popover, Spin } from 'antd'
 import { DownOutlined } from '@ant-design/icons'
 import Dimension from './Dimension'
 import SortableCheckboxGroup from './SortableCheckboxGroup'
+import DimensionViewAntdTable, { initViewColumns } from './DimensionViewAntdTable'
 
 const Table = require('olap-cube').model.Table
 export const defaults = {
@@ -17,8 +18,12 @@ export default ({
     localStorageKey, 
     localeText, 
     selectedKeys: extSelectedKeys,
-    dimensionViewComponent,
-    isProcessing
+    dimensionViewComponent = DimensionViewAntdTable,
+    initViewColumns: initDimensionViewColumns = initViewColumns,
+    isProcessing,
+    keyName = '_key',
+    selectedName = '_selected',
+    userSelectedName = '_userSelected'
  }) => {
     if (isProcessing) return <Spin size="large" />
 
@@ -78,6 +83,15 @@ export default ({
         );
     }
 
+    const initViewColumns = () => {
+        if (cubeDef.dimensionDefs[0].viewColumns) return;
+        for (let dimensionDef of cubeDef.dimensionDefs) {
+            initDimensionViewColumns({cubeDef, dimensionDef, localeText});
+        }
+    }
+
+    initViewColumns();
+
     const extSetSelectedKeys = useCallback((newSelectedKeys, { dimensionCode, keys }) => {if (onSelectionChanged) onSelectionChanged({ selectedKeys: newSelectedKeys, dimensionCode, keys: keys });}, [onSelectionChanged]);
 
     const [selectedKeys, setSelectedKeys] = extSelectedKeys === undefined
@@ -87,6 +101,7 @@ export default ({
     const [dimensionSettings, setDimensionSettings] = useState(initDimensionSettings);
     const tableStructure = useMemo(initTableStructure, [cubeDef]);
     const tableRows = useMemo(initTableRows, [cubeDef, cubeData]);
+    
 
     const changeDimensionSettings = (dimensionSettings) => {
         setDimensionSettings(dimensionSettings);
@@ -168,14 +183,13 @@ export default ({
         let selectedFunc = (dimension, value) => selectedKeys[dimension] && selectedKeys[dimension].indexOf(value) >= 0;
 
         let sortFunc = (a, b) => compare([
-            [a.UserSelected, b.UserSelected, 'desc'],
-            [a.Selected, b.Selected, 'desc'],
-            [a.Label, b.Label]
+            [a[userSelectedName], b[userSelectedName], 'desc'],
+            [a[selectedName], b[selectedName], 'desc']
         ])
 
         let createRow = ({row, dimensionDef, dimensionTable, selected}) => {
             let dimensionCode = dimensionDef.code
-            let result = { Value: row[0], Label: label(dimensionTable, row[0]), Selected: selected, UserSelected: selectedFunc(dimensionCode, row[0]) }
+            let result = { [keyName]: row[0], ...label(dimensionTable, row[0]), [selectedName]: selected, [userSelectedName]: selectedFunc(dimensionCode, row[0]) }
             let measureDefs = dimensionDef.measureDefs || cubeDef.measureDefs;
             for (let i in measureDefs) {
                 result[measureDefs[i].code] = !selected ? 0 : (row[Number(i) + 1])[0]
@@ -192,7 +206,7 @@ export default ({
             const initialValue = measureDefsCodes.map(m => 0)
             let rollupFunc = getRollupFunc(measureDefs)
             let selected = filteredTable.rollup(dimensionCode, measureDefsCodes, rollupFunc, initialValue).rows.map(r => createRow({row: r, dimensionDef, dimensionTable, selected: true}));
-            let selectedIndex = selected.map(r => r.Value);
+            let selectedIndex = selected.map(r => r[keyName]);
             let others = tableRows.rollup(dimensionCode, measureDefsCodes, rollupFunc, initialValue).rows.filter(r => selectedIndex.indexOf(r[0]) < 0)
                 .map(r => createRow({row: r, dimensionDef, dimensionTable, selected: false}));
             return [...selected, ...others].sort(sortFunc);
@@ -246,6 +260,8 @@ export default ({
                         selectedKeys={selectedKeys[dimension.code]}
                         onSelectionChanged={(keys) => selectionChanged({ dimensionCode: dimension.code, keys: keys })}
                         localeText={localeText}
+                        keyName={keyName}
+                        selectedName={selectedName}
                     />
                 })}
         </Row>

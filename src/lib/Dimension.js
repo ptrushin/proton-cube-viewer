@@ -2,7 +2,6 @@ import React from 'react';
 import { Row, Col, Button } from 'antd'
 import { FilterOutlined, CloseOutlined } from '@ant-design/icons'
 import './CubeViewer.css';
-import DimensionViewAntdTable from './DimensionViewAntdTable'
 
 export default ({
     index, 
@@ -13,7 +12,9 @@ export default ({
     dimension, 
     onSelectionChanged,
     localeText,
-    dimensionViewComponent: DimensionViewComponent = DimensionViewAntdTable
+    dimensionViewComponent: DimensionViewComponent,
+    keyName,
+    selectedName
 }) => {
     return <div style={{
         marginTop: 10,
@@ -42,6 +43,8 @@ export default ({
                     selectedKeys={selectedKeys}
                     onSelectionChanged={onSelectionChanged}
                     localeText={localeText}
+                    keyName={keyName}
+                    selectedName={selectedName}
                 />
             </div>
         </Row>

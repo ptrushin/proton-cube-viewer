@@ -5,7 +5,7 @@ import { Button } from 'antd'
 import { loadCubeData, loadCubeRows, getOdataFilter } from '../lib/CubeLoaderOdata'
 import CubeViewer from "../lib/CubeViewer";
 
-import DimensionViewAgGrid from '../lib/DimensionViewAgGrid'
+import DimensionViewAgGrid, {initViewColumns} from '../lib/DimensionViewAgGrid'
 
 export class ExampleAgGrid extends PureComponent {
     odataPath = 'https://services.odata.org/V4/Northwind/Northwind.svc';
@@ -31,19 +31,19 @@ export class ExampleAgGrid extends PureComponent {
                 {
                     code: 'CustomerID', title: 'By customers',
                     table: 'Customers',
-                    columnDefs: [
-                        { headerName: "CompanyName", field: "Label.CompanyName", sortable: true, filter: 'agTextColumnFilter', flex: 2 },
-                        { headerName: "Count", field: "Cnt", sortable: true, width: 80, filter: null },
-                        { headerName: "Freight", field: "Freight", sortable: true, width: 80, filter: null }
+                    columns: [
+                        { title: 'CompanyName', dataIndex: 'CompanyName', type: 'text' },
+                        { title: 'Count', dataIndex: 'Cnt', type: 'long' },
+                        { title: 'Freight', dataIndex: 'Freight', type: 'float' },
                     ]
                 },
                 {
                     code: 'EmployeeID', title: 'By employees',
                     table: 'Employees',
-                    columnDefs: [
-                        { headerName: "LastName", field: "Label.LastName", sortable: true, filter: 'agTextColumnFilter', flex: 2 },
-                        { headerName: "Count", field: "Cnt", sortable: true, width: 80, filter: null },
-                        { headerName: "Freight", field: "Freight", sortable: true, width: 80, filter: null }
+                    columns: [
+                        { title: "LastName", dataIndex: 'LastName', type: 'text' },
+                        { title: "Count", dataIndex: "Cnt", type: 'long' },
+                        { title: "Freight", dataIndex: "Freight", type: 'float' }
                     ]
                 }
             ],
@@ -124,6 +124,7 @@ export class ExampleAgGrid extends PureComponent {
                         Reset: 'Reset'
                     }}
                     dimensionViewComponent={DimensionViewAgGrid}
+                    initViewColumns={initViewColumns}
                     isProcessing={this.state.isProcessing}
                 />
             </div>

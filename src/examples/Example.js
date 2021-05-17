@@ -5,8 +5,6 @@ import { Button } from 'antd'
 import { loadCubeData, loadCubeRows, getOdataFilter } from '../lib/CubeLoaderOdata'
 import CubeViewer from "../lib/CubeViewer";
 
-import AntdTableContainsFilter from '../lib/AntdTableContainsFilter'
-
 const localeText={
     ConfigureDimensions: 'Configure dimensions',
     ResetToDefault: 'Reset to default',
@@ -39,27 +37,19 @@ export class Example extends PureComponent {
                 {
                     code: 'CustomerID', title: 'By customers',
                     table: 'Customers',
-                    columnDefs: [
-                        {
-                            title: 'CompanyName', dataIndex: ['Label', 'CompanyName'],
-                            sorter: (a, b) => a.Label.CompanyName.localeCompare(b.Label.CompanyName),
-                            ...AntdTableContainsFilter(['Label', 'CompanyName'], localeText),
-                        },
-                        { title: 'Count', dataIndex: 'Cnt', align: 'right', width: 80 },
-                        { title: 'Freight', dataIndex: 'Freight', align: 'right', width: 80, render: v => v.toFixed(2) },
+                    columns: [
+                        { title: 'CompanyName', dataIndex: 'CompanyName', type: 'text' },
+                        { title: 'Count', dataIndex: 'Cnt', type: 'long' },
+                        { title: 'Freight', dataIndex: 'Freight', type: 'float' },
                     ]
                 },
                 {
                     code: 'EmployeeID', title: 'By employees',
                     table: 'Employees',
-                    columnDefs: [
-                        {
-                            title: "LastName", dataIndex: ['Label', 'LastName'],
-                            sorter: (a, b) => a.Label.CompanyName.localeCompare(b.Label.CompanyName),
-                            ...AntdTableContainsFilter(['Label', 'LastName'], localeText)
-                        },
-                        { title: "Count", dataIndex: "Cnt", align: 'right', width: 80 },
-                        { title: "Freight", dataIndex: "Freight", align: 'right', width: 80, render: v => v.toFixed(2) }
+                    columns: [
+                        { title: "LastName", dataIndex: 'LastName', type: 'text' },
+                        { title: "Count", dataIndex: "Cnt", type: 'long' },
+                        { title: "Freight", dataIndex: "Freight", type: 'float' }
                     ]
                 }
             ],
