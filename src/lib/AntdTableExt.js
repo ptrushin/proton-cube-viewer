@@ -39,7 +39,10 @@ export function ContextFilter(dataIndex, localeText) {
 };
 
 export function stringSorter(a, b, dataIndex) { 
-    return getValueByDataIndex(a, dataIndex).localeCompare(getValueByDataIndex(b, dataIndex));
+    const valueA = getValueByDataIndex(a, dataIndex);
+    return valueA === null || valueA === undefined
+        ? -1
+        : valueA.localeCompare(getValueByDataIndex(b, dataIndex));
 }
 
 export function numberSorter(a, b, dataIndex) {
