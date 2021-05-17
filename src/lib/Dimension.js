@@ -2,7 +2,7 @@ import React from 'react';
 import { Row, Col, Button } from 'antd'
 import { FilterOutlined, CloseOutlined } from '@ant-design/icons'
 import './CubeViewer.css';
-import DimensionViewAntdTable from '../lib/DimensionViewAntdTable'
+import DimensionViewAntdTable from './DimensionViewAntdTable'
 
 export default ({
     index, 
