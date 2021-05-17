@@ -1,7 +1,7 @@
 import React from "react";
 import { Input, Button, Space } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
-import { getValueByDataIndex, numberCompare } from './utils';
+import { getValueByDataIndex, numberCompare, stringCompare } from './utils';
 
 export function ContextFilter(dataIndex, localeText) {
     return {
@@ -38,11 +38,8 @@ export function ContextFilter(dataIndex, localeText) {
     }
 };
 
-export function stringSorter(a, b, dataIndex) { 
-    const valueA = getValueByDataIndex(a, dataIndex);
-    return valueA === null || valueA === undefined
-        ? -1
-        : valueA.localeCompare(getValueByDataIndex(b, dataIndex));
+export function stringSorter(a, b, dataIndex) {
+    return stringCompare(getValueByDataIndex(a, dataIndex), getValueByDataIndex(b, dataIndex));
 }
 
 export function numberSorter(a, b, dataIndex) {
