@@ -260,6 +260,7 @@ export default ({
                         selectedKeys={selectedKeys[dimension.code]}
                         onSelectionChanged={(keys) => selectionChanged({ dimensionCode: dimension.code, keys: keys })}
                         localeText={localeText}
+                        dimensionViewComponent={dimensionViewComponent}
                         keyName={keyName}
                         selectedName={selectedName}
                     />
