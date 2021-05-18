@@ -7,7 +7,7 @@
 
 * Local
     * AntdTable (Default) - https://github.com/ptrushin/proton-cube-viewer/blob/main/src/examples/Example.js
-    * AgGrid - https://github.com/ptrushin/proton-cube-viewer/blob/main/src/examples/ExampleAgGid.js
+    * AgGrid - https://github.com/ptrushin/proton-cube-viewer/blob/main/src/examples/ExampleAgGrid.js
 * CodeSandbox
     * AntdTable (Default) with local data - https://codesandbox.io/s/relaxed-murdock-79iwx
     * AntdTable (Default) with loading from data from server - https://codesandbox.io/s/jovial-sky-ycvgq
