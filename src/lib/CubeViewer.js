@@ -3,7 +3,7 @@ import { Row, Space, Button, Popover, Spin } from 'antd'
 import { DownOutlined } from '@ant-design/icons'
 import Dimension from './Dimension'
 import SortableCheckboxGroup from './SortableCheckboxGroup'
-import DimensionViewAntdTable, { initViewColumns } from './DimensionViewAntdTable'
+import DimensionViewAntdTable, { initViewColumns as initViewColumnsDefault } from './DimensionViewAntdTable'
 
 const Table = require('olap-cube').model.Table
 export const defaults = {
@@ -19,7 +19,7 @@ export default ({
     localeText, 
     selectedKeys: extSelectedKeys,
     dimensionViewComponent = DimensionViewAntdTable,
-    initViewColumns: initDimensionViewColumns = initViewColumns,
+    initViewColumns: initDimensionViewColumns = initViewColumnsDefault,
     isProcessing,
     keyName = '_key',
     selectedName = '_selected',
