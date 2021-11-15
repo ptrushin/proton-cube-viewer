@@ -4,6 +4,7 @@ import { DownOutlined } from '@ant-design/icons'
 import Dimension from './Dimension'
 import SortableCheckboxGroup from './SortableCheckboxGroup'
 import DimensionViewAntdTable, { initViewColumns as initViewColumnsDefault } from './DimensionViewAntdTable'
+import DimensionViewChart from './DimensionViewChart'
 
 const Table = require('olap-cube').model.Table
 export const defaults = {
@@ -249,7 +250,7 @@ export default ({
                 .sort((a, b) => dimensionSettings[a.code].index - dimensionSettings[b.code].index)
                 .map((dimension, idx) => {
                     return <Dimension
-                        dimensionViewComponent={dimensionViewComponent}
+                        dimensionViewComponent={!dimension.type ? dimensionViewComponent : DimensionViewChart}
                         key={idx}
                         id={dimension.code}
                         index={idx}

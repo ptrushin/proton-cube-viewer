@@ -8,7 +8,13 @@
 }
 
 .proton-cube-viewer-dimension .proton-cube-viewer-antd {
-    border: 1px solid lightgray
+    border: 1px solid lightgray;
+}
+
+.proton-cube-viewer-dimension .proton-cube-viewer-chart {
+    border: 1px solid lightgray;
+    width: 400px;
+    height: 428px;
 }
 
 .proton-cube-viewer-dimension .ag-theme-balham .ag-row.unselected-row {

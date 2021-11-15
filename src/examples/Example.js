@@ -51,6 +51,17 @@ export class Example extends PureComponent {
                         { title: "Count", dataIndex: "Cnt", type: 'long' },
                         { title: "Freight", dataIndex: "Freight", type: 'float' }
                     ]
+                },
+                {
+                    code: 'EmployeeID', title: 'By employees Chart',
+                    table: 'Employees',
+                    id: 'EmployeeIDChart',
+                    type: 'chart',
+                    columns: [
+                        { title: "LastName", dataIndex: 'LastName', type: 'text' },
+                        { title: "Count", dataIndex: "Cnt", type: 'long' },
+                        { title: "Freight", dataIndex: "Freight", type: 'float' }
+                    ]
                 }
             ],
             fieldDefs: [
