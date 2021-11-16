@@ -168,7 +168,6 @@ export default ({
         }
 
         let label = (dimensionTable, key) => {
-            console.log('label', dimensionTable, key);
             return !key || key === 0 
                 ? null 
                 : dimensionTable 

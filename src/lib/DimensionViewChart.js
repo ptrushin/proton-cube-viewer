@@ -3,7 +3,6 @@ import './CubeViewer.css';
 import Chart from './Chart'
 
 export default ({ rows, selectedKeys, dimension, onSelectionChanged, localeText, keyName, selectedName }) => {
-    console.log({rows, selectedKeys, dimension, onSelectionChanged, localeText, keyName, selectedName})
     let labelCode = dimension.columns[0].dataIndex;
     let valueCodes = dimension.columns.slice(1, 2).map(_ => _.dataIndex);
     return <div className="proton-cube-viewer-chart">
