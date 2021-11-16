@@ -14,7 +14,9 @@ export default ({
     localeText,
     dimensionViewComponent: DimensionViewComponent,
     keyName,
-    selectedName
+    selectedName,
+    allRows,
+    cubeDef
 }) => {
     return <div style={{
         marginTop: 10,
@@ -45,6 +47,8 @@ export default ({
                     localeText={localeText}
                     keyName={keyName}
                     selectedName={selectedName}
+                    allRows={allRows}
+                    cubeDef={cubeDef}
                 />
             </div>
         </Row>
