@@ -46,10 +46,12 @@ export class Example extends PureComponent {
             ],
             fieldDefs: [
                 { code: 'Freight' },
+                { code: 'Cost', client: true }
             ],
             measureDefs: [
                 { code: 'Cnt', funcName: 'count' },
-                { code: 'Freight', funcName: 'sum'/*, fieldCode: 'Freight'*/ }
+                { code: 'Freight', funcName: 'sum'/*, fieldCode: 'Freight'*/ },
+                { code: 'Cost', funcName: 'sum'/*, fieldCode: 'Freight'*/ }
             ],
             widgetDefs: [
                 {
@@ -59,6 +61,7 @@ export class Example extends PureComponent {
                         { title: 'CompanyName', dataIndex: 'CompanyName', type: 'text' },
                         { title: 'Count', dataIndex: 'Cnt', type: 'long' },
                         { title: 'Freight', dataIndex: 'Freight', type: 'float' },
+                        { title: 'Cost', dataIndex: 'Cost', type: 'long' },
                     ]
                 },
                 {
@@ -105,6 +108,9 @@ export class Example extends PureComponent {
             odataPath: this.odataPath,
             cubeDef: this.state.cubeDef,
             callback: ({ cubeData }) => {
+                for (let r of cubeData.cubeRows) {
+                    r.Cost = Math.floor(Math.random() * 10000)
+                }
                 this.setState({
                     cubeData: {
                         ...this.state.cubeData,

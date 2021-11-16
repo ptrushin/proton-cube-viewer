@@ -64,7 +64,7 @@ export function loadDimensionTablesAll({odataPath, cubeDef, callback}) {
 }
 
 export function loadCubeRows({odataPath, cubeDef, callback}) {
-    const select = cubeDef.dimensionDefs.map(_ => _.code).concat(cubeDef.fieldDefs.map(_ => _.code));
+    const select = cubeDef.dimensionDefs.map(_ => _.code).concat(cubeDef.fieldDefs.filter(_ => !_.client).map(_ => _.code));
     loadAll({
         url: `${odataPath}/${cubeDef.code}?$select=${select.join(',')}`,
         callback: (data) => {
