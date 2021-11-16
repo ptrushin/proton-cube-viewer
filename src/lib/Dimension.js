@@ -16,7 +16,8 @@ export default ({
     keyName,
     selectedName,
     allRows,
-    cubeDef
+    cubeDef,
+    cubeData
 }) => {
     return <div style={{
         marginTop: 10,
@@ -49,6 +50,7 @@ export default ({
                     selectedName={selectedName}
                     allRows={allRows}
                     cubeDef={cubeDef}
+                    cubeData={cubeData}
                 />
             </div>
         </Row>

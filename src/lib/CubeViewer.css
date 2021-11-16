@@ -1,5 +1,5 @@
 .proton-cube-viewer-dimension {
-    width: 400px;
+    min-width: 400px;
 }
 
 .proton-cube-viewer-dimension .ag-theme-balham {
@@ -9,6 +9,7 @@
 
 .proton-cube-viewer-dimension .proton-cube-viewer-antd {
     border: 1px solid lightgray;
+    width: 400px;
 }
 
 .proton-cube-viewer-dimension .proton-cube-viewer-chart {

@@ -274,6 +274,7 @@ export default ({
                         selectedName={selectedName}
                         allRows={dimensionsRows}
                         cubeDef={cubeDef}
+                        cubeData={cubeData}
                     />
                 })}
         </Row>
