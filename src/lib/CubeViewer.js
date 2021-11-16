@@ -53,7 +53,7 @@ export default ({
             }
         }
 
-        for (let dimensionDef of cubeDef.dimensionDefs) {
+        for (let dimensionDef of cubeDef.widgetDefs) {
             if (dimensionDef.hidden) continue
             if (!dimensionSettings[dimensionDef.code]) {
                 dimensionSettings[dimensionDef.code] = {
@@ -85,8 +85,8 @@ export default ({
     }
 
     const initViewColumns = () => {
-        if (cubeDef.dimensionDefs[0].viewColumns) return;
-        for (let dimensionDef of cubeDef.dimensionDefs) {
+        if (cubeDef.widgetDefs[0].viewColumns) return;
+        for (let dimensionDef of cubeDef.widgetDefs) {
             initDimensionViewColumns({cubeDef, dimensionDef, localeText});
         }
     }
@@ -134,7 +134,8 @@ export default ({
     }
 
     const isVisibleDimension = (dimensionDef) => {
-        return !dimensionDef.hidden && (dimensionSettings[dimensionDef.code] || {}).visible;
+        return !dimensionDef.hidden && true
+        //(dimensionSettings[dimensionDef.code] || {}).visible;
     }
 
     const getDimensionsRows = () => {
@@ -166,11 +167,14 @@ export default ({
             return true;
         }
 
-        let label = (dimensionTable, key) => !key || key === 0 
-            ? null 
-            : dimensionTable 
-                ? (dimensionTable[key] || '???') 
-                : key;
+        let label = (dimensionTable, key) => {
+            console.log('label', dimensionTable, key);
+            return !key || key === 0 
+                ? null 
+                : dimensionTable 
+                    ? (dimensionTable[key] || '???') 
+                    : key;
+        }
 
         let compare = (values) => {
             for (var v of values) {
@@ -225,12 +229,18 @@ export default ({
 
     const dimensionsRows = useMemo(getDimensionsRows, [tableRows, selectedKeys, dimensionSettings])
 
+    const getDimensionComponent = (type) => {
+        if (!type) return dimensionViewComponent;
+        if (type === 'chart') return DimensionViewChart;
+        return type;
+    }
+
     return <div className="proton-cube-viewer">
         <Row>
             <Space>
                 <Popover trigger="click" content={
                     <Space direction="vertical">
-                        <SortableCheckboxGroup items={cubeDef.dimensionDefs.filter(_ => !_.hidden).map(_ => ({code: _.code, title: _.title}))} itemSettings={dimensionSettings}
+                        <SortableCheckboxGroup items={cubeDef.widgetDefs.filter(_ => !_.hidden).map(_ => ({code: _.code, title: _.title}))} itemSettings={dimensionSettings}
                             onChangeItemSettings={changeDimensionSettings}
                             localeText={localeText}
                         />
@@ -245,16 +255,16 @@ export default ({
             </Space>
         </Row>
         <Row>
-            {cubeDef && cubeDef.dimensionDefs && cubeDef.dimensionDefs
+            {cubeDef && cubeDef.widgetDefs && cubeDef.widgetDefs
                 .filter(d => !d.hidden && dimensionSettings[d.code].visible)
                 .sort((a, b) => dimensionSettings[a.code].index - dimensionSettings[b.code].index)
                 .map((dimension, idx) => {
                     return <Dimension
-                        dimensionViewComponent={!dimension.type ? dimensionViewComponent : DimensionViewChart}
+                        dimensionViewComponent={getDimensionComponent(dimension.type)}
                         key={idx}
                         id={dimension.code}
                         index={idx}
-                        rows={dimensionsRows[dimension.code]}
+                        rows={dimensionsRows[dimension.dimensionCode || dimension.code]}
                         clearFilters={() => selectionChanged({ keys: [], dimensionCode: dimension.code })}
                         deleteDimension={() => changeDimensionSettings({...dimensionSettings, [dimension.code]: {...dimensionSettings[dimension.code], visible: false}})}
                         dimension={dimension}
@@ -263,6 +273,8 @@ export default ({
                         localeText={localeText}
                         keyName={keyName}
                         selectedName={selectedName}
+                        allRows={dimensionsRows}
+                        cubeDef={cubeDef}
                     />
                 })}
         </Row>

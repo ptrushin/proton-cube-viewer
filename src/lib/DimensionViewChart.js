@@ -2,44 +2,6 @@ import React from 'react';
 import './CubeViewer.css';
 import Chart from './Chart'
 
-const contractExecutionStateAggr = [
-    {
-        contractor: "Контрагент 1",
-        inWork: 70,
-        inWorkWithProblem: 30,
-        executed: 50,
-        closed: 25
-    },
-    {
-        contractor: "Контрагент 2",
-        inWork: 60,
-        inWorkWithProblem: 15,
-        executed: 105,
-        closed: 55
-    },
-    {
-        contractor: "Контрагент 3",
-        inWork: 50,
-        inWorkWithProblem: 40,
-        executed: 20,
-        closed: 100
-    },
-    {
-        contractor: "Контрагент 4",
-        inWork: 60,
-        inWorkWithProblem: 50,
-        executed: 50,
-        closed: 15
-    },
-    {
-        contractor: "Контрагент 5",
-        inWork: 30,
-        inWorkWithProblem: 15,
-        executed: 5,
-        closed: 50
-    }
-]
-
 export default ({ rows, selectedKeys, dimension, onSelectionChanged, localeText, keyName, selectedName }) => {
     console.log({rows, selectedKeys, dimension, onSelectionChanged, localeText, keyName, selectedName})
     let labelCode = dimension.columns[0].dataIndex;

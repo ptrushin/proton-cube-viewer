@@ -4,6 +4,8 @@ import './CubeViewer.css';
 import { ContextFilter, stringSorter, numberSorter } from './AntdTableExt';
 
 export default ({ rows, selectedKeys, dimension, onSelectionChanged, localeText, keyName, selectedName }) => {
+    console.log('dimension', dimension);
+    console.log('rows', rows);
     return <div className="proton-cube-viewer-antd">
         <Table
             rowClassName={(record, index) => !record[selectedName] ? 'unselected-row' : undefined}

@@ -4,6 +4,7 @@ import { Button } from 'antd'
 
 import { loadCubeData, loadCubeRows, getOdataFilter } from '../lib/CubeLoaderOdata'
 import CubeViewer from "../lib/CubeViewer";
+import Custom from './Custom'
 
 const localeText={
     ConfigureDimensions: 'Configure dimensions',
@@ -32,8 +33,25 @@ export class Example extends PureComponent {
             dimensionDefs: [
                 {
                     // needs to identity
-                    code: 'OrderID', hidden: true
+                    code: 'OrderID'
                 },
+                {
+                    code: 'CustomerID',
+                    table: 'Customers'
+                },
+                {
+                    code: 'EmployeeID',
+                    table: 'Employees'
+                }
+            ],
+            fieldDefs: [
+                { code: 'Freight' },
+            ],
+            measureDefs: [
+                { code: 'Cnt', funcName: 'count' },
+                { code: 'Freight', funcName: 'sum'/*, fieldCode: 'Freight'*/ }
+            ],
+            widgetDefs: [
                 {
                     code: 'CustomerID', title: 'By customers',
                     table: 'Customers',
@@ -53,23 +71,27 @@ export class Example extends PureComponent {
                     ]
                 },
                 {
-                    code: 'EmployeeID', title: 'By employees Chart',
+                    code: 'EmployeeIDByChart', title: 'By employees Chart',
+                    dimensionCode: 'EmployeeID',
                     table: 'Employees',
-                    id: 'EmployeeIDChart',
                     type: 'chart',
                     columns: [
                         { title: "LastName", dataIndex: 'LastName', type: 'text' },
                         { title: "Count", dataIndex: "Cnt", type: 'long' },
                         { title: "Freight", dataIndex: "Freight", type: 'float' }
                     ]
+                },
+                {
+                    code: 'custom', title: 'Custom',
+                    dimensionCode: 'EmployeeID',
+                    table: 'Employees',
+                    type: Custom,
+                    columns: [
+                        { title: "LastName", dataIndex: 'LastName', type: 'text' },
+                        { title: "Count", dataIndex: "Cnt", type: 'long' },
+                        { title: "Freight", dataIndex: "Freight", type: 'float' }
+                    ]
                 }
-            ],
-            fieldDefs: [
-                { code: 'Freight' },
-            ],
-            measureDefs: [
-                { code: 'Cnt', funcName: 'count' },
-                { code: 'Freight', funcName: 'sum'/*, fieldCode: 'Freight'*/ }
             ]
         },
         cubeData: {
